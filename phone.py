@@ -1,9 +1,6 @@
-#pip install mysql-connector-python
-#pip install streamlit plotly mysql-connector-python
-#pip install streamlit
 import mysql.connector 
 import pandas as pd
-#import psycopg2
+import json
 import streamlit as st
 import PIL 
 from PIL import Image
@@ -14,14 +11,15 @@ import requests
 import base64
 import mysql # connect to the database
 #establishing the connection
+#use your database informations in password, host, and adta base name.
 conn = mysql.connector.connect(user='root', password='Csa1809', host='localhost', database="phonepe_pulse")
-# create a cursor object
+# create a cursor object -Allows Py code to execute postgreSQL command in database
 
 cursor = conn.cursor()
 #with st.sidebar:
 SELECT = option_menu(
     menu_title = None,
-    options = ["Home","About","Data Insight","Profile"],
+    options = ["Home","About","Data Insight","Data Visualization","Profile"],
     default_index=2,
     orientation="horizontal",
     styles={"container": {"padding": "0!important", "background-color": "white","size":"cover", "width": "100%"},
@@ -38,8 +36,6 @@ if SELECT == "Data Insight":
     options = ["--select--",
                "Top 10 states based on year and amount of transaction",
                "List 10 states based on type and amount of transaction",
-               "Top 5 Transaction_Type based on Transaction_Amount",
-               "Top 10 Registered-users based on States and District",
                "Top 10 Districts based on states and Count of transaction",
                "List 10 Districts based on states and amount of transaction",
                "List 10 Transaction_Count based on Districts and states",
@@ -59,28 +55,14 @@ if SELECT == "Data Insight":
         st.write(df)
         st.title("List 10 states based on type and amount of transaction")
         st.bar_chart(data=df,x="Total_Transaction",y="States")
-         #3   
-    elif select=="Top 5 Transaction_Type based on Transaction_Amount":
-        cursor.execute("SELECT DISTINCT Transaction_Type, SUM(Transaction_Amount) AS Amount FROM agg_user GROUP BY Transaction_Type ORDER BY Amount DESC LIMIT 5");
-        df = pd.DataFrame(cursor.fetchall(),columns=['Transaction_Type','Transaction_Amount'])
-        st.write(df)
-        st.title("Top 5 Transaction_Type based on Transaction_Amount")
-        st.bar_chart(data=df,x="Transaction_Type",y="Amount")
-         #4           
+         #3          
     elif select=="Top 10 Registered-users based on States and District":
         cursor.execute("SELECT DISTINCT State, District, SUM(RegisteredUsers) AS Users FROM top_user GROUP BY State, District ORDER BY Users DESC LIMIT 10");
         df = pd.DataFrame(cursor.fetchall(),columns=['State','District','RegisteredUsers'])
         st.write(df)
         st.title("Top 10 Registered-users based on States and District")
         st.bar_chart(data=df,x="State",y="RegisteredUsers")   
-            #5     
-    elif select=="Top 10 Districts based on states and Count of transaction":
-        cursor.execute("SELECT DISTINCT States,District,SUM(Transaction_Count) AS Counts FROM map_tran GROUP BY States,District ORDER BY Counts DESC LIMIT 10");
-        df = pd.DataFrame(cursor.fetchall(),columns=['States','District','Transaction_Count'])
-        st.write(df)
-        st.title("Top 10 Districts based on states and Count of transaction")
-        st.bar_chart(data=df,x="States",y="Transaction_Count") 
-            #6          
+            #4            
     elif select=="List 10 Districts based on states and amount of transaction":
         cursor.execute("SELECT DISTINCT States,Transaction_year,SUM(Transaction_Amount) AS Amount FROM agg_trans GROUP BY States, Transaction_year ORDER BY Amount ASC LIMIT 10");
         df = pd.DataFrame(cursor.fetchall(),columns=['States','Transaction_year','Transaction_Amount'])
@@ -88,7 +70,7 @@ if SELECT == "Data Insight":
         st.title("Least 10 Districts based on states and amount of transaction")
         st.bar_chart(data=df,x="States",y="Transaction_Amount")
             
-            #7     
+            #5     
     elif select=="List 10 Transaction_Count based on Districts and states":
         cursor.execute("SELECT DISTINCT States, District, SUM(Transaction_Count) AS Counts FROM map_tran GROUP BY States,District ORDER BY Counts ASC LIMIT 10");
         df = pd.DataFrame(cursor.fetchall(),columns=['States','District','Transaction_Count'])
@@ -96,7 +78,7 @@ if SELECT == "Data Insight":
         st.title("List 10 Transaction_Count based on Districts and states")
         st.bar_chart(data=df,x="States",y="Transaction_Count")
             
-            #8        
+            #        
     elif select=="Top 10 RegisteredUsers based on states and District":
         cursor.execute("SELECT DISTINCT States,District, SUM(RegisteredUsers) AS Users FROM map_user GROUP BY States,District ORDER BY Users DESC LIMIT 10");
         df = pd.DataFrame(cursor.fetchall(),columns = ['States','District','RegisteredUsers'])
@@ -104,15 +86,26 @@ if SELECT == "Data Insight":
         st.title("Top 10 RegisteredUsers based on states and District")
         st.bar_chart(data=df,x="States",y="RegisteredUsers")
 
-    cursor = conn.cursor()
-# execute a SELECT statement
-    cursor.execute("SELECT * FROM agg_trans")
-# fetch all rows
-    rows = cursor.fetchall()
-    df = pd.DataFrame(rows, columns=['States', 'Transaction_Year', 'Quarters', 'Transaction_Type', 'Transaction_Count','Transaction_Amount'])
-    fig = px.choropleth(df, locations="States", scope="asia", color="States", hover_name="States",
-        title="Live Geo Visualization of India")
-    st.plotly_chart(fig)
+    
+
+#------vizualization--------#
+
+if SELECT == "Data Visualization":
+   
+  df = pd.read_csv("https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/active_cases_2020-07-17_0800.csv")
+
+  fig = px.choropleth(
+    df,
+    geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
+    featureidkey='properties.ST_NM',
+    locations='state',
+    color='active cases',
+    color_continuous_scale='Reds'
+  )
+
+  fig.update_geos(fitbounds="locations", visible=False)
+  fig.update_layout(title_text='Active PhonePe Transactions Case list in 2022')
+  fig.show()
 
 #----------------Home----------------------#
 
