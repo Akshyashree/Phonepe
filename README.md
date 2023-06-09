@@ -5,7 +5,9 @@ get data from: https://github.com/PhonePe/pulse/tree/master/data
 # Installations
 
 pip install mysql-connector-python
+
 pip install streamlit plotly mysql-connector-python
+
 pip install streamlit
 
 # Problem Statement
