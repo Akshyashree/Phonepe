@@ -10,6 +10,20 @@ pip install streamlit plotly mysql-connector-python
 
 pip install streamlit
 
+# Files and Programs
+ # Dataset Link
+ https://github.com/PhonePe/pulse#readme
+ # Inspired From 
+ https://www.phonepe.com/pulse/explore/transaction/2022/4/
+ # Data Extraction from python notebook to SQL
+ DataExtraction.ipynb
+ # Images , Videos and pdf used in this Project
+ images & videos
+ # Main Project
+ phone.py
+ # Data Used in Visualization - Number of Transactions in 2022
+ phonepe_transactions.csv
+
 # Problem Statement
 The Phonepe pulse Github repository contains a large amount of data related to
 various metrics and statistics. The goal is to extract this data and process it to obtain
@@ -69,8 +83,4 @@ Overall, the result of this project will be a comprehensive and user-friendly so
 for extracting, transforming, and visualizing data from the Phonepe pulse Github
 repository.
 
-# Dataset Link
-https://github.com/PhonePe/pulse#readme
-# Inspired From 
-https://www.phonepe.com/pulse/explore/transaction/2022/4/
 
