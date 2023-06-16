@@ -91,9 +91,8 @@ if SELECT == "Data Insight":
 #------vizualization--------#
 
 if SELECT == "Data Visualization":
-   
-  df = pd.read_csv("https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/active_cases_2020-07-17_0800.csv")
-
+   #to save the file as csv ctrl+shift+S -> .csv
+  df = pd.read_csv(r"C:\Users\snaks\OneDrive\Desktop\DT3\Prj\prj 2\phonepe_transactions.csv",header=0,sep="\t")
   fig = px.choropleth(
     df,
     geojson="https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson",
